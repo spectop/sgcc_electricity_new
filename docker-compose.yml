@@ -1,5 +1,5 @@
 services:
-  sgcc_electricity_app:
+  sgcc:
     env_file:
       - .env
     image: registry.cn-hangzhou.aliyuncs.com/arcw/sgcc_electricity:latest # for use docker.io: arcw/sgcc_electricity:latest
@@ -11,5 +11,6 @@ services:
     restart: unless-stopped
     volumes:
       - ./:/data        # if you want to read homeassistant.db, homeassistant.db is in the container at /data/
+      - ./scripts:/app
     command: python3 main.py
     init: true
