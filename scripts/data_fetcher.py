@@ -552,7 +552,7 @@ class DataFetcher:
             month_element = driver.find_element(By.XPATH, "//*[@id='pane-first']/div[1]/div[2]/div[2]/div/div[3]/table/tbody").text
             month_element = month_element.split("\n")
             month_element.remove("MAX")
-	    month_element = np.array(month_element[:-(len(month_element) % 3)]).reshape(-1, 3)
+            month_element = np.array(month_element[:-(len(month_element) % 3)]).reshape(-1, 3)
             # 将每月的用电量保存为List
             month = []
             usage = []
@@ -628,23 +628,25 @@ class DataFetcher:
             dic = {'name': 'yearly_charge', 'value': f"{yearly_charge} "}
             self.insert_expand_data(dic)
             
-            for index in range(len(date)):
-                dic = {'date': date[index], 'usage': float(usages[index])}
-                # 插入到数据库
-                try:
-                    self.insert_data(dic)
-                    logging.info(f"The electricity consumption of {usages[index]}KWh on {date[index]} has been successfully deposited into the database")
-                except Exception as e:
-                    logging.debug(f"The electricity consumption of {date[index]} failed to save to the database, which may already exist: {str(e)}")
+            if date:
+                for index in range(len(date)):
+                    dic = {'date': date[index], 'usage': float(usages[index])}
+                    # 插入到数据库
+                    try:
+                        self.insert_data(dic)
+                        logging.info(f"The electricity consumption of {usages[index]}KWh on {date[index]} has been successfully deposited into the database")
+                    except Exception as e:
+                        logging.debug(f"The electricity consumption of {date[index]} failed to save to the database, which may already exist: {str(e)}")
 
-            for index in range(len(month)):
-                try:
-                    dic = {'name': f"{month[index]}usage", 'value': f"{month_usage[index]}"}
-                    self.insert_expand_data(dic)
-                    dic = {'name': f"{month[index]}charge", 'value': f"{month_charge[index]}"}
-                    self.insert_expand_data(dic)
-                except Exception as e:
-                    logging.debug(f"The electricity consumption of {month[index]} failed to save to the database, which may already exist: {str(e)}")
+            if month:
+                for index in range(len(month)):
+                    try:
+                        dic = {'name': f"{month[index]}usage", 'value': f"{month_usage[index]}"}
+                        self.insert_expand_data(dic)
+                        dic = {'name': f"{month[index]}charge", 'value': f"{month_charge[index]}"}
+                        self.insert_expand_data(dic)
+                    except Exception as e:
+                        logging.debug(f"The electricity consumption of {month[index]} failed to save to the database, which may already exist: {str(e)}")
             if month_charge:
                 month_charge = month_charge[-1]
             else:
